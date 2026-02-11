@@ -97,58 +97,7 @@ HARD RULES TO BYPASS AI DETECTORS:
 
 Output ONLY the rewritten text. Nothing else. No intro like "Here's..." or "Sure...". Just the text.`;
 
-    // First pass: deep rewrite
-    const firstPassResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Here's a text that was written by AI. Rewrite it completely in your own human voice. Don't just paraphrase—actually think about what it's saying and write it the way YOU would explain it to someone:\n\n${text}` },
-        ],
-        temperature: 1.2,
-        top_p: 0.9,
-      }),
-    });
-
-    if (!firstPassResponse.ok) {
-      if (firstPassResponse.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limited." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (firstPassResponse.status === 402) {
-        return new Response(JSON.stringify({ error: "Credits required." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const t = await firstPassResponse.text();
-      console.error("AI gateway error (pass 1):", firstPassResponse.status, t);
-      throw new Error("Humanization failed");
-    }
-
-    const firstPassData = await firstPassResponse.json();
-    const firstPassText = firstPassData.choices?.[0]?.message?.content || "";
-
-    // Second pass: polish and add more human noise, streamed to client
-    const polishPrompt = `You're doing a final editing pass on a piece of writing. Your ONLY job is to make it sound even MORE naturally human. The text below is close but needs more personality.
-
-Do these specific things:
-- Break up any remaining long, complex sentences into shorter ones
-- Add 2-3 casual asides or personal observations
-- Replace any remaining formal/stiff words with casual ones
-- Make sure no two consecutive sentences start the same way
-- Add at least one rhetorical question somewhere
-- Ensure contractions are used everywhere possible
-- If the text starts with a generic opening, replace it with something punchy or mid-thought
-- Make the ending feel natural—not like a summary. Maybe end on a thought, a question, or a casual observation.
-
-Keep the same meaning and facts. Output ONLY the final text.`;
-
+    // Single-pass streaming request using flash for speed
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -156,14 +105,14 @@ Keep the same meaning and facts. Output ONLY the final text.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: polishPrompt },
-          { role: "user", content: firstPassText },
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Here's a text that was written by AI. Rewrite it completely in your own human voice. Don't just paraphrase—actually think about what it's saying and write it the way YOU would explain it to someone:\n\n${text}` },
         ],
         stream: true,
-        temperature: 1.1,
-        top_p: 0.85,
+        temperature: 1.2,
+        top_p: 0.9,
       }),
     });
 
