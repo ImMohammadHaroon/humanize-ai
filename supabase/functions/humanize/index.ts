@@ -22,33 +22,25 @@ serve(async (req) => {
 
     const intensityMap: Record<number, string> = {
       1: `LIGHT REWRITE RULES:
-- Keep the core message and about 60% of the original structure
-- Swap out robotic phrasing for something that sounds like you actually talk
-- Add 3-5 contractions per paragraph minimum
-- Break 2-3 long sentences into shorter punchy ones
-- Throw in 1-2 personal asides or opinions per paragraph
-- Rearrange clause order in at least half the sentences`,
+- Keep 70-80% of original structure, only rephrase robotic-sounding parts
+- Swap out stiff phrasing for natural alternatives
+- Add contractions where they fit
+- DO NOT add new content or make it longer
+- Keep every sentence's meaning intact`,
 
       2: `MODERATE REWRITE RULES:
-- Restructure 70-80% of sentences completely
-- Rewrite every paragraph opening—never start the same way twice
-- Add personal voice: opinions, reactions, mini-stories, analogies
-- Mix in sentence fragments. Like this. Works great.
-- Change vocabulary aggressively—find unexpected synonyms
-- Merge some paragraphs, split others—break the original rhythm entirely
-- Add at least one rhetorical question per 2-3 paragraphs
-- Throw in casual asides using dashes—they feel really natural—and break up monotony`,
+- Restructure most sentences but keep the SAME meaning for each
+- Change vocabulary to more natural human choices
+- Vary sentence lengths for burstiness
+- DO NOT add new examples, opinions, or ideas not in the original
+- Output length must match input length closely`,
 
       3: `FULL REWRITE RULES:
-- Treat the input as RAW NOTES only. You're writing from scratch.
-- Build entirely new paragraph structures, new openings, new flow
-- Add your own examples, analogies, and observations that aren't in the original
-- Write like you're explaining this to someone smart over drinks
-- Every single sentence must be YOUR words, YOUR style
-- Rearrange the order of ideas if it flows better
-- Add personal takes: "I think...", "What bugs me about this is...", "The interesting part is..."
-- Use storytelling where possible—set scenes, use "imagine" or "picture this"
-- No sentence should be traceable back to the original wording`,
+- Completely rephrase every sentence in your own words
+- Use totally different sentence structures and vocabulary
+- BUT preserve every single point and argument from the original
+- DO NOT add anything new—no new examples, no new opinions, no elaboration
+- Same length as original, just completely different wording`,
     };
 
     const toneInstructions: Record<string, string> = {
@@ -208,13 +200,17 @@ ANTI-AI-DETECTION TECHNIQUES (MANDATORY):
    - Contractions EVERYWHERE: it's, don't, won't, can't, they're, we've, wouldn't, I'd, that's, here's, what's, there's, who's, let's, didn't, wasn't, couldn't
 
 ═══════════════════════════════════════
-QUALITY RULES:
+MEANING PRESERVATION (THIS IS THE #1 PRIORITY):
 ═══════════════════════════════════════
-- Output must be AT LEAST as long as input (preferably 10-20% longer)
-- Keep ALL facts, data, statistics, and technical terms accurate
-- Maintain the same depth of analysis—don't dumb it down
-- If input has markdown formatting (headers, lists, bold), keep similar formatting but rephrase everything
-- Add your own insights and observations that enrich the content
+- NEVER change the meaning of any sentence. Every idea, claim, and argument must remain EXACTLY the same.
+- Do NOT add new information, opinions, examples, or insights that weren't in the original.
+- Do NOT remove any point or idea from the original text.
+- Do NOT expand or elaborate beyond what the original says.
+- Keep the output SAME LENGTH as input (±10% max). If original is 200 words, output should be 180-220 words. NEVER make it longer than necessary.
+- Keep ALL facts, data, statistics, names, and technical terms EXACTLY as they are.
+- Preserve the logical flow and order of ideas—don't rearrange arguments.
+- Your job is ONLY to rephrase HOW things are said, NOT WHAT is said.
+- Think of it as translating from "AI English" to "Human English"—same message, different wording.
 
 ═══════════════════════════════════════
 OUTPUT FORMAT:
@@ -234,7 +230,7 @@ OUTPUT FORMAT:
         model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Rewrite this text completely in your own authentic human voice. Make it sound like YOU wrote it from scratch after reading and understanding the source material. Vary your sentence lengths wildly—some tiny, some sprawling. Use unexpected word choices. Add your personality. The goal: if someone runs this through GPTZero or any AI detector, it must score as human-written.\n\nSOURCE MATERIAL:\n\n${text}` },
+          { role: "user", content: `Rephrase this text so it sounds naturally human-written while keeping the EXACT SAME meaning, arguments, and length. Do NOT add new ideas, examples, or opinions. Do NOT make it longer. Just change the wording to bypass AI detectors while preserving every original point. Vary sentence lengths and use natural word choices.\n\nTEXT TO REPHRASE:\n\n${text}` },
         ],
         stream: true,
         temperature: 1.0,
