@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Search, Wand2, TrendingDown, Clock } from "lucide-react";
+import { Search, Wand2, TrendingDown, Clock, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -25,71 +25,70 @@ export default function Dashboard() {
       });
   }, [user]);
 
+  const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+  const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
+
   return (
-    <div className="space-y-8">
-      <div>
+    <motion.div className="space-y-8" variants={container} initial="hidden" animate="show">
+      <motion.div variants={item}>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground mt-1">Welcome back. Here's your activity overview.</p>
-      </div>
+      </motion.div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Analyses</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg AI Score</CardTitle>
-            <TrendingDown className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.avgScore}%</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Humanized</CardTitle>
-            <Wand2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.humanized}</div>
-          </CardContent>
-        </Card>
+        {[
+          { label: "Total Analyses", value: stats.total, icon: Clock, gradient: "from-primary/10 to-primary/5" },
+          { label: "Avg AI Score", value: `${stats.avgScore}%`, icon: TrendingDown, gradient: "from-warning/10 to-warning/5" },
+          { label: "Humanized", value: stats.humanized, icon: Wand2, gradient: "from-accent/10 to-accent/5" },
+        ].map((stat, i) => (
+          <motion.div key={stat.label} variants={item}>
+            <Card className={`bg-gradient-to-br ${stat.gradient} border-border/50 hover:shadow-md transition-shadow`}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{stat.label}</CardTitle>
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card className="group hover:border-primary/30 transition-colors cursor-pointer">
-          <Link to="/detect">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10">
-                <Search className="h-6 w-6 text-destructive" />
+      <motion.div className="grid gap-4 sm:grid-cols-2" variants={item}>
+        <Link to="/detect" className="group">
+          <Card className="h-full border-border/50 hover:border-destructive/30 hover:shadow-lg transition-all duration-300">
+            <CardContent className="flex items-center justify-between p-6">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 group-hover:bg-destructive/20 transition-colors">
+                  <Search className="h-6 w-6 text-destructive" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">AI Detector</h3>
+                  <p className="text-sm text-muted-foreground">Analyze text for AI patterns</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold">AI Detector</h3>
-                <p className="text-sm text-muted-foreground">Analyze text for AI patterns</p>
-              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground/40 group-hover:text-destructive group-hover:translate-x-1 transition-all" />
             </CardContent>
-          </Link>
-        </Card>
-        <Card className="group hover:border-primary/30 transition-colors cursor-pointer">
-          <Link to="/humanize">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                <Wand2 className="h-6 w-6 text-primary" />
+          </Card>
+        </Link>
+        <Link to="/humanize" className="group">
+          <Card className="h-full border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+            <CardContent className="flex items-center justify-between p-6">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <Wand2 className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Humanizer</h3>
+                  <p className="text-sm text-muted-foreground">Transform AI text to human-like</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold">Humanizer</h3>
-                <p className="text-sm text-muted-foreground">Transform AI text to human-like</p>
-              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </CardContent>
-          </Link>
-        </Card>
-      </div>
-    </div>
+          </Card>
+        </Link>
+      </motion.div>
+    </motion.div>
   );
 }

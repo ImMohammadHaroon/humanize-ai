@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -38,61 +39,72 @@ export default function Auth() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md border-border/50 shadow-xl">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <Sparkles className="h-6 w-6 text-primary" />
-          </div>
-          <CardTitle className="text-2xl font-bold">
-            {isLogin ? "Welcome back" : "Create account"}
-          </CardTitle>
-          <CardDescription>
-            {isLogin ? "Sign in to your account" : "Get started with HumanizeAI"}
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative"
+      >
+        <Card className="w-full max-w-md border-border/50 shadow-2xl shadow-primary/5">
+          <CardHeader className="text-center pb-2">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20">
+              <Sparkles className="h-7 w-7 text-primary" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
-            </Button>
-            <p className="text-sm text-muted-foreground">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-              <button
-                type="button"
-                className="text-primary hover:underline font-medium"
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin ? "Sign up" : "Sign in"}
-              </button>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              {isLogin ? "Welcome back" : "Create account"}
+            </CardTitle>
+            <CardDescription>
+              {isLogin ? "Sign in to continue" : "Get started with HumanizeAI"}
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="h-11"
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4 pt-2">
+              <Button type="submit" className="w-full h-11 gap-2" disabled={loading}>
+                {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+                {!loading && <ArrowRight className="h-4 w-4" />}
+              </Button>
+              <p className="text-sm text-muted-foreground">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                  onClick={() => setIsLogin(!isLogin)}
+                >
+                  {isLogin ? "Sign up" : "Sign in"}
+                </button>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+      </motion.div>
     </div>
   );
 }
