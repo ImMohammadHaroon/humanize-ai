@@ -105,7 +105,7 @@ Output ONLY the rewritten text. Nothing else. No intro like "Here's..." or "Sure
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Here's a text that was written by AI. Rewrite it completely in your own human voice. Don't just paraphrase—actually think about what it's saying and write it the way YOU would explain it to someone:\n\n${text}` },
