@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Wand2, Loader2, RotateCcw, CheckCircle } from "lucide-react";
+import { Wand2, Loader2, RotateCcw, CheckCircle, Copy, Check } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 const TONES = ["professional", "casual", "academic", "creative"] as const;
@@ -24,7 +24,15 @@ export default function Humanize() {
   const [detectionScore, setDetectionScore] = useState<number | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  const [copied, setCopied] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(humanizedText);
+    setCopied(true);
+    toast({ title: "Copied!", description: "Humanized text copied to clipboard." });
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const wordCount = inputText.trim() ? inputText.trim().split(/\s+/).length : 0;
 
@@ -200,6 +208,10 @@ export default function Humanize() {
                     <Loader2 className="h-3 w-3 animate-spin" /> Verifying...
                   </span>
                 )}
+                <Button variant="outline" size="sm" onClick={handleCopy} className="gap-2">
+                  {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
                 {detectionScore !== null && detectionScore > 30 && (
                   <Button variant="outline" size="sm" onClick={() => handleHumanize(humanizedText)} className="gap-2">
                     <RotateCcw className="h-3 w-3" />
