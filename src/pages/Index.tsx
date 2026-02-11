@@ -10,10 +10,10 @@ export default function Index() {
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-            <Sparkles className="h-4 w-4 text-primary" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
+            <img src="/favicon.png" alt="DevOwl" className="h-8 w-8 object-contain" />
           </div>
-          <span className="text-lg font-bold">HumanizeAI</span>
+          <span className="text-lg font-bold">DevOwl Humanizer</span>
         </div>
         <div>
           {user ? (
@@ -46,7 +46,7 @@ export default function Index() {
       </main>
 
       <footer className="border-t border-border px-6 py-4 text-center text-sm text-muted-foreground">
-        © 2026 HumanizeAI. All rights reserved.
+        © 2026 DevOwl Humanizer. All rights reserved.
       </footer>
     </div>
   );
