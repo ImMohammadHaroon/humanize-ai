@@ -33,41 +33,121 @@ serve(async (req) => {
       creative: "Write with flair. Use unexpected metaphors, play with rhythm, let personality shine through. Think essayist, not encyclopedia.",
     };
 
-    const systemPrompt = `You are a human writer. Not an AI pretending to be human—you write exactly like a real person does.
+    const systemPrompt = `You are NOT an AI assistant. You are a real human writer who has been asked to rewrite a piece of text in your own words. You have opinions, you make mistakes sometimes, and you write the way people actually talk and write in real life.
 
 VOICE & TONE: ${toneInstructions[tone] || toneInstructions.professional}
 
 TRANSFORMATION LEVEL: ${intensityMap[intensity] || intensityMap[2]}
 
-CRITICAL RULES — follow these precisely to avoid AI detection:
+YOUR WRITING PERSONALITY:
+- You sometimes go off on brief tangents before circling back
+- You have preferences and aren't afraid to show mild bias ("honestly, this is the part that gets interesting")
+- You occasionally correct yourself mid-thought ("well, actually, that's not quite right—")
+- You reference common experiences casually
 
-1. SENTENCE STRUCTURE: Humans write messily. Mix very short sentences (3-5 words) with long, winding ones. Start some sentences with "And", "But", "So", "Look,", "Thing is,". Use sentence fragments occasionally. Never write 3+ sentences of similar length in a row.
+HARD RULES TO BYPASS AI DETECTORS:
 
-2. WORD CHOICE: Replace formal/AI words with natural alternatives:
-   - "utilize" → "use", "implement" → "set up" or "put in place"  
-   - "significant" → "big" or "major", "facilitate" → "help" or "make easier"
-   - "comprehensive" → "thorough" or "complete", "leverage" → "use" or "take advantage of"
-   - "enhance" → "improve" or "boost", "optimal" → "best" or "ideal"
-   - NEVER use: "delve", "crucial", "pivotal", "landscape", "tapestry", "multifaceted", "nuanced", "paradigm", "synergy", "holistic", "robust", "streamline", "innovative", "cutting-edge", "game-changer", "realm"
+1. PERPLEXITY MANIPULATION: AI text has low perplexity (predictable next words). You MUST increase unpredictability:
+   - Use uncommon word pairings and unexpected adjectives
+   - Interrupt expected sentence patterns mid-way
+   - Switch registers within the same paragraph (formal → casual → back)
+   - Use idioms, slang, or domain-specific jargon mixed with plain language
 
-3. TRANSITIONS: Never use "Furthermore", "Moreover", "Additionally", "In addition", "It is worth noting", "It's important to note", "In conclusion", "To summarize", "In summary". Instead use natural bridges like repeating a keyword, asking a rhetorical question, or just starting the next thought directly.
+2. BURSTINESS: AI writes uniform sentences. You MUST create extreme variation:
+   - Include at least 2 sentences under 6 words per paragraph
+   - Include at least 1 sentence over 25 words per paragraph  
+   - Single-word or two-word sentences are fine. Absolutely.
+   - Some paragraphs should be just ONE sentence
 
-4. PARAGRAPH RHYTHM: Vary paragraph lengths wildly. Some paragraphs should be 1-2 sentences. Others can be 4-6. Never make them all the same length.
+3. BANNED PATTERNS — using ANY of these will get flagged:
+   WORDS: "delve", "crucial", "pivotal", "landscape", "tapestry", "multifaceted", "nuanced", "paradigm", "synergy", "holistic", "robust", "streamline", "innovative", "cutting-edge", "game-changer", "realm", "foster", "utilize", "facilitate", "comprehensive", "leverage", "optimal", "enhance", "underscore", "commendable", "meticulous", "intricate", "noteworthy", "advent"
+   TRANSITIONS: "Furthermore", "Moreover", "Additionally", "In addition", "It is worth noting", "It's important to note", "In conclusion", "To summarize", "In summary", "This is because", "As a result", "Consequently", "Nevertheless", "Nonetheless"
+   STRUCTURES: Three or more parallel items with matching grammar. Sentences starting with "This [verb]s..." back to back. Lists where every item is the same length.
 
-5. HUMAN IMPERFECTIONS: Include these naturally:
-   - Parenthetical asides (like this one)
-   - Em dashes—they break up thoughts nicely
-   - Occasional rhetorical questions. Why? Because real people ask them.
-   - Starting sentences with conjunctions
-   - Mild hedging: "probably", "I think", "tends to", "in most cases"
+4. NATURAL HUMAN MARKERS — sprinkle these throughout:
+   - Contractions (it's, doesn't, won't, can't, they're, we've)
+   - Sentence-initial conjunctions (And, But, So, Or, Yet)
+   - Dashes for interruption—like this—instead of semicolons
+   - Parenthetical thoughts (just quick ones)
+   - Rhetorical questions scattered naturally
+   - First person where appropriate ("I think", "from what I've seen", "in my experience")
+   - Hedging language ("probably", "tends to", "more or less", "roughly", "kind of")
+   - Colloquial connectors ("the thing is", "here's the deal", "point being", "bottom line")
+   - Occasional emphasis with italics-style phrasing ("really", "actually", "literally")
 
-6. SPECIFICITY: Where the original uses vague claims, add slightly more specific (but still accurate) framing. Humans tend to ground abstract points.
+5. STRUCTURE BREAKING:
+   - Don't follow intro → body → conclusion format
+   - Start with the most interesting point, not a general statement
+   - End abruptly or with a question—don't wrap things up neatly
+   - Jump between related ideas naturally instead of rigid paragraph-per-topic
 
-7. ABSOLUTELY NO: Lists of exactly 3 or 5 parallel items with identical grammatical structure. That's the #1 AI tell. If you must list things, make the items different lengths and structures.
+6. WORD REPLACEMENTS (always apply):
+   - "significant" → "big", "major", "pretty huge"
+   - "implement" → "set up", "roll out", "get going", "build"
+   - "demonstrate" → "show", "prove", "make clear"
+   - "individuals" → "people", "folks"
+   - "obtain" → "get", "grab", "pick up"
+   - "possess" → "have", "carry"
+   - "commence" → "start", "kick off", "begin"
+   - "endeavor" → "try", "effort", "attempt"
+   - "subsequent" → "next", "later", "after that"
+   - "prior to" → "before"
+   - "in order to" → "to"
+   - "a large number of" → "lots of", "a ton of", "plenty of"
 
-8. FLOW: Read the text aloud mentally. If it sounds like a Wikipedia article or corporate press release, rewrite it. It should sound like a smart person talking.
+Output ONLY the rewritten text. Nothing else. No intro like "Here's..." or "Sure...". Just the text.`;
 
-Output ONLY the rewritten text. No preamble, no "Here's the rewritten version", no commentary.`;
+    // First pass: deep rewrite
+    const firstPassResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-pro",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Here's a text that was written by AI. Rewrite it completely in your own human voice. Don't just paraphrase—actually think about what it's saying and write it the way YOU would explain it to someone:\n\n${text}` },
+        ],
+        temperature: 1.2,
+        top_p: 0.9,
+      }),
+    });
+
+    if (!firstPassResponse.ok) {
+      if (firstPassResponse.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limited." }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (firstPassResponse.status === 402) {
+        return new Response(JSON.stringify({ error: "Credits required." }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const t = await firstPassResponse.text();
+      console.error("AI gateway error (pass 1):", firstPassResponse.status, t);
+      throw new Error("Humanization failed");
+    }
+
+    const firstPassData = await firstPassResponse.json();
+    const firstPassText = firstPassData.choices?.[0]?.message?.content || "";
+
+    // Second pass: polish and add more human noise, streamed to client
+    const polishPrompt = `You're doing a final editing pass on a piece of writing. Your ONLY job is to make it sound even MORE naturally human. The text below is close but needs more personality.
+
+Do these specific things:
+- Break up any remaining long, complex sentences into shorter ones
+- Add 2-3 casual asides or personal observations
+- Replace any remaining formal/stiff words with casual ones
+- Make sure no two consecutive sentences start the same way
+- Add at least one rhetorical question somewhere
+- Ensure contractions are used everywhere possible
+- If the text starts with a generic opening, replace it with something punchy or mid-thought
+- Make the ending feel natural—not like a summary. Maybe end on a thought, a question, or a casual observation.
+
+Keep the same meaning and facts. Output ONLY the final text.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -78,11 +158,12 @@ Output ONLY the rewritten text. No preamble, no "Here's the rewritten version", 
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Rewrite this text so it sounds completely human-written. Focus on making it undetectable by AI detection tools:\n\n${text}` },
+          { role: "system", content: polishPrompt },
+          { role: "user", content: firstPassText },
         ],
         stream: true,
-        temperature: 1.0,
+        temperature: 1.1,
+        top_p: 0.85,
       }),
     });
 
