@@ -48,14 +48,14 @@ export default function Auth() {
       >
         <Card className="w-full max-w-md border-border/50 shadow-2xl shadow-primary/5">
           <CardHeader className="text-center pb-2">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20">
-              <Sparkles className="h-7 w-7 text-primary" />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl overflow-hidden">
+              <img src="/favicon.png" alt="DevOwl" className="h-14 w-14 object-contain" />
             </div>
             <CardTitle className="text-2xl font-bold tracking-tight">
               {isLogin ? "Welcome back" : "Create account"}
             </CardTitle>
             <CardDescription>
-              {isLogin ? "Sign in to continue" : "Get started with HumanizeAI"}
+              {isLogin ? "Sign in to continue" : "Get started with DevOwl Humanizer"}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>

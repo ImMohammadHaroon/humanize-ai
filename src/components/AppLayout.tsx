@@ -34,12 +34,12 @@ function AppSidebarContent() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <div className="flex items-center gap-2.5 px-4 py-4 h-14">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary/20">
-          <Sparkles className="h-4 w-4 text-sidebar-primary" />
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg overflow-hidden">
+          <img src="/favicon.png" alt="DevOwl" className="h-8 w-8 object-contain" />
         </div>
         {!collapsed && (
           <span className="text-base font-bold tracking-tight text-sidebar-primary-foreground">
-            HumanizeAI
+            DevOwl
           </span>
         )}
       </div>
