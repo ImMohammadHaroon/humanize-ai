@@ -10,7 +10,7 @@ import {
   Shield,
   Zap,
   ChevronRight,
-  Check,
+  
   Star,
   ArrowRight,
 } from "lucide-react";
@@ -41,7 +41,7 @@ export default function Index() {
           <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+            <a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a>
           </nav>
           <div className="flex items-center gap-3">
             {user ? (
@@ -217,84 +217,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ─── PRICING ─── */}
-      <section id="pricing" className="border-t border-border/60">
-        <motion.div
-          className="mx-auto max-w-6xl px-6 py-24"
-          variants={stagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Simple, transparent pricing</h2>
-            <p className="mt-4 text-muted-foreground">Start free. Upgrade when you need more.</p>
-          </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
-            {[
-              {
-                name: "Free",
-                price: "$0",
-                period: "forever",
-                features: ["5 humanizations / day", "AI Detector access", "Basic tones", "Community support"],
-                cta: "Get Started",
-                popular: false,
-              },
-              {
-                name: "Pro",
-                price: "$19",
-                period: "/ month",
-                features: ["Unlimited humanizations", "All tones & intensities", "Priority processing", "History & analytics", "Email support"],
-                cta: "Start Pro Trial",
-                popular: true,
-              },
-              {
-                name: "Team",
-                price: "$49",
-                period: "/ month",
-                features: ["Everything in Pro", "5 team members", "API access", "Custom tones", "Dedicated support"],
-                cta: "Contact Sales",
-                popular: false,
-              },
-            ].map((plan) => (
-              <motion.div key={plan.name} variants={fadeUp}>
-                <Card className={`h-full relative ${plan.popular ? "border-primary shadow-xl shadow-primary/10 scale-105" : "border-border/50"}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <CardContent className="p-8">
-                    <h3 className="text-lg font-semibold">{plan.name}</h3>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground text-sm">{plan.period}</span>
-                    </div>
-                    <ul className="mt-6 space-y-3">
-                      {plan.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-sm">
-                          <Check className="h-4 w-4 text-primary shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      className="w-full mt-8"
-                      variant={plan.popular ? "default" : "outline"}
-                      asChild
-                    >
-                      <Link to={cta}>{plan.cta}</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+
 
       {/* ─── TESTIMONIALS ─── */}
       <section className="border-t border-border/60 bg-card/50">
@@ -365,7 +289,7 @@ export default function Index() {
             <div className="flex gap-8 text-sm text-muted-foreground">
               <a href="#features" className="hover:text-foreground transition-colors">Features</a>
               <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
-              <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+              <a href="#testimonials" className="hover:text-foreground transition-colors">Testimonials</a>
             </div>
             <p className="text-sm text-muted-foreground">© 2026 DevOwl Humanizer</p>
           </div>
