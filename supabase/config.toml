@@ -1,0 +1,7 @@
+project_id = "qwflajjvhhytgstqasmo"
+
+[functions.detect]
+verify_jwt = false
+
+[functions.humanize]
+verify_jwt = false
