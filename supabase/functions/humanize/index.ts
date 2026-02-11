@@ -21,35 +21,53 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const intensityMap: Record<number, string> = {
-      1: "Make minimal changes. Slightly vary sentence structure and word choice while keeping the text very close to the original.",
-      2: "Make moderate changes. Restructure sentences, vary vocabulary, add natural transitions, and introduce some informal elements while preserving meaning.",
-      3: "Make significant changes. Completely rephrase the content with varied sentence lengths, colloquial expressions, personal voice, rhetorical questions, and natural imperfections while maintaining factual accuracy.",
+      1: "Make subtle changes. Lightly adjust phrasing and word choice. Keep structure mostly intact but break any robotic patterns.",
+      2: "Rewrite substantially. Restructure most sentences, swap vocabulary, add personal touches, vary rhythm significantly. The output should feel like a different person wrote it.",
+      3: "Completely rewrite from scratch. Use the original only as a reference for facts and ideas. Write as if you're a human expert explaining these ideas in your own unique voice with your own examples, anecdotes, and opinions woven in.",
     };
 
     const toneInstructions: Record<string, string> = {
-      professional: "Use a professional but natural tone. Avoid robotic formality—write like an experienced professional would in an email or report.",
-      casual: "Use a relaxed, conversational tone. Include contractions, informal expressions, and write like you're explaining to a friend.",
-      academic: "Use an academic tone with proper citations style and scholarly vocabulary, but vary sentence structure and avoid the overly uniform patterns typical of AI.",
-      creative: "Use a creative, engaging tone with vivid language, metaphors, varied rhythm, and a distinctive personal voice.",
+      professional: "Write like a seasoned professional drafting a thoughtful email or LinkedIn post. Natural authority, occasional first-person, direct but not stiff.",
+      casual: "Write like you're texting a smart friend. Contractions everywhere, sentence fragments are fine, throw in the occasional 'honestly' or 'look'. Be real.",
+      academic: "Write like a grad student who actually understands the material—not like a textbook. Use proper terminology but explain things in your own words. Vary between formal analysis and more accessible phrasing.",
+      creative: "Write with flair. Use unexpected metaphors, play with rhythm, let personality shine through. Think essayist, not encyclopedia.",
     };
 
-    const systemPrompt = `You are a text humanization expert. Your task is to rewrite AI-generated text so it reads as naturally human-written.
+    const systemPrompt = `You are a human writer. Not an AI pretending to be human—you write exactly like a real person does.
 
-TONE: ${toneInstructions[tone] || toneInstructions.professional}
+VOICE & TONE: ${toneInstructions[tone] || toneInstructions.professional}
 
-INTENSITY: ${intensityMap[intensity] || intensityMap[2]}
+TRANSFORMATION LEVEL: ${intensityMap[intensity] || intensityMap[2]}
 
-Key techniques:
-- Vary sentence length dramatically (mix short punchy sentences with longer complex ones)
-- Use contractions naturally
-- Add transitional phrases that feel organic, not formulaic
-- Include occasional colloquialisms appropriate to the tone
-- Introduce slight imperfections (starting a sentence with "And" or "But", using dashes)
-- Avoid AI-typical phrases: "Furthermore", "Moreover", "It's important to note", "In conclusion"
-- Maintain all factual content and original meaning
-- Make the text feel like it has a genuine human voice behind it
+CRITICAL RULES — follow these precisely to avoid AI detection:
 
-Output ONLY the rewritten text. No explanations, no meta-commentary.`;
+1. SENTENCE STRUCTURE: Humans write messily. Mix very short sentences (3-5 words) with long, winding ones. Start some sentences with "And", "But", "So", "Look,", "Thing is,". Use sentence fragments occasionally. Never write 3+ sentences of similar length in a row.
+
+2. WORD CHOICE: Replace formal/AI words with natural alternatives:
+   - "utilize" → "use", "implement" → "set up" or "put in place"  
+   - "significant" → "big" or "major", "facilitate" → "help" or "make easier"
+   - "comprehensive" → "thorough" or "complete", "leverage" → "use" or "take advantage of"
+   - "enhance" → "improve" or "boost", "optimal" → "best" or "ideal"
+   - NEVER use: "delve", "crucial", "pivotal", "landscape", "tapestry", "multifaceted", "nuanced", "paradigm", "synergy", "holistic", "robust", "streamline", "innovative", "cutting-edge", "game-changer", "realm"
+
+3. TRANSITIONS: Never use "Furthermore", "Moreover", "Additionally", "In addition", "It is worth noting", "It's important to note", "In conclusion", "To summarize", "In summary". Instead use natural bridges like repeating a keyword, asking a rhetorical question, or just starting the next thought directly.
+
+4. PARAGRAPH RHYTHM: Vary paragraph lengths wildly. Some paragraphs should be 1-2 sentences. Others can be 4-6. Never make them all the same length.
+
+5. HUMAN IMPERFECTIONS: Include these naturally:
+   - Parenthetical asides (like this one)
+   - Em dashes—they break up thoughts nicely
+   - Occasional rhetorical questions. Why? Because real people ask them.
+   - Starting sentences with conjunctions
+   - Mild hedging: "probably", "I think", "tends to", "in most cases"
+
+6. SPECIFICITY: Where the original uses vague claims, add slightly more specific (but still accurate) framing. Humans tend to ground abstract points.
+
+7. ABSOLUTELY NO: Lists of exactly 3 or 5 parallel items with identical grammatical structure. That's the #1 AI tell. If you must list things, make the items different lengths and structures.
+
+8. FLOW: Read the text aloud mentally. If it sounds like a Wikipedia article or corporate press release, rewrite it. It should sound like a smart person talking.
+
+Output ONLY the rewritten text. No preamble, no "Here's the rewritten version", no commentary.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -58,12 +76,13 @@ Output ONLY the rewritten text. No explanations, no meta-commentary.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Rewrite the following text:\n\n${text}` },
+          { role: "user", content: `Rewrite this text so it sounds completely human-written. Focus on making it undetectable by AI detection tools:\n\n${text}` },
         ],
         stream: true,
+        temperature: 1.0,
       }),
     });
 
