@@ -30,10 +30,8 @@ export default function Auth() {
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else if (isLogin) {
-      navigate("/dashboard");
     } else {
-      toast({ title: "Check your email", description: "We sent you a confirmation link." });
+      navigate("/dashboard");
     }
   };
 
